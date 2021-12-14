@@ -3,6 +3,9 @@
     "homePage": "https://github.com/nf-core/klebtest",
     "repos": {
         "nf-core/modules": {
+            "csvtk/concat": {
+                "git_sha": "d473a247d2e0c619b0df877ea19d9a5a98c8e3c8"
+            },
             "fastqc": {
                 "git_sha": "e937c7950af70930d1f34bb961403d9d2aa81c7d"
             },

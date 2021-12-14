@@ -59,6 +59,8 @@ multiqc_options.args += params.multiqc_title ? Utils.joinModuleArgs(["--title \"
 //
 include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules['fastqc'] )
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( options: multiqc_options   )
+include { CSVTK_CONCAT as MLSTCAT } from '../modules/nf-core/modules/csvtk/concat/main' addParams( options: [args: '--no-header-row'] )
+include { CSVTK_CONCAT as KLEBORATECAT } from '../modules/nf-core/modules/csvtk/concat/main' addParams( options: [publish_to_base: true] )
 
 //
 // MODULE: Use modified local copy
@@ -103,16 +105,25 @@ workflow KLEBTEST {
         INPUT_CHECK.out.reads
     )
     ch_software_versions = ch_software_versions.mix(SHOVILL.out.version.first().ifEmpty(null))
-    
+
     MLST (
         SHOVILL.out.contigs
     )
-    ch_software_versions = ch_software_versions.mix(MLST.out.version.ifEmpty(null))    
+    ch_software_versions = ch_software_versions.mix(MLST.out.version.first().ifEmpty(null))    
+
+    MLST.out.tsv.collect{meta, tsv -> tsv}.map{ tsv -> [[id:'mlst'], tsv]}.set{ ch_merge_mlst }
+
 
     KLEBORATE (
         SHOVILL.out.contigs
     )
-    ch_software_versions = ch_software_versions.mix(KLEBORATE.out.version.ifEmpty(null))    
+    ch_software_versions = ch_software_versions.mix(KLEBORATE.out.version.first().ifEmpty(null))    
+
+    KLEBORATE.out.txt.collect{meta, txt -> txt}.map{ txt -> [[id:'kleborate'], txt]}.set{ ch_merge_kleborate }
+
+    KLEBORATECAT(ch_merge_kleborate, 'tsv', 'tsv')
+    MLSTCAT(ch_merge_mlst, 'tsv', 'tsv')
+    ch_software_versions = ch_software_versions.mix(MLSTCAT.out.versions.ifEmpty(null))
 
     //
     // MODULE: Pipeline reporting

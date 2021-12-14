@@ -8,9 +8,6 @@ process KLEBORATE {
     tag "$meta.id"
     label 'process_low'
 
-    publishDir "${params.outdir}/${getSoftwareName(task.process)}/",
-        mode: params.publish_dir_mode
-
     conda (params.enable_conda ? "bioconda::kleborate=2.1.0" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
         container 'https://depot.galaxyproject.org/singularity/kleborate:2.1.0--pyhdfd78af_1'
@@ -22,7 +19,7 @@ process KLEBORATE {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.txt"), emit: txt
+    tuple val(meta), path("*.tsv"), emit: txt
     path  "*.version.txt"          , emit: version
 
     script:
@@ -33,7 +30,7 @@ process KLEBORATE {
     """
     kleborate \\
         $args \\
-        --outfile ${meta.id}.results.txt \\
+        --outfile ${meta.id}.results.tsv \\
         --assemblies $fasta
 
     kleborate --version | sed 's/Kleborate v//;' > ${software}.version.txt
@@ -41,7 +38,7 @@ process KLEBORATE {
     stub:
     def software = getSoftwareName(task.process)
     """
-      touch ${meta.id}.results.txt 
+      touch ${meta.id}.results.tsv 
       kleborate --version | sed 's/Kleborate v//;' > ${software}.version.txt
     """
 

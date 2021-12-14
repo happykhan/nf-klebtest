@@ -9,9 +9,6 @@ process MLST {
 
     label 'process_low'
 
-    publishDir "${params.outdir}/${getSoftwareName(task.process)}/",
-        mode: params.publish_dir_mode
-
     conda (params.enable_conda ? "bioconda::mlst=2.19.0" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
         container 'https://depot.galaxyproject.org/singularity/mlst:2.19.0--hdfd78af_1'
@@ -29,6 +26,7 @@ process MLST {
     script:
     // Add soft-links to original FastQs for consistent naming in pipeline
     def software = getSoftwareName(task.process)
+
     """
     mlst \\
         --threads $task.cpus \\

@@ -20,12 +20,11 @@ process SHOVILL {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path("contigs.fa")                         , emit: contigs
-    tuple val(meta), path("shovill.log")                        , emit: log
+    tuple val(meta), path("${meta.id}.fa")                         , emit: contigs
+    tuple val(meta), path("${meta.id}.shovill.log")                        , emit: log
     path  "*.version.txt"          , emit: version
 
     script:
-    // Add soft-links to original FastQs for consistent naming in pipeline
     """
     shovill \\
         --R1 ${reads[0]} \\
@@ -34,16 +33,15 @@ process SHOVILL {
         --cpus $task.cpus \\
         --outdir ./ \\
         --force
+    mv contigs.fa ${meta.id}.fa
+    mv shovill.log ${meta.id}.shovill.log
     shovill --version | sed -e 's/^.*shovill //' > shovill.version.txt
     """
     stub:
 
     """
-      touch contigs.fa
-      touch shovill.log
-      touch skesa.fasta
-      touch shovill.corrections
-      touch contig.gfa
+      touch ${meta.id}.fa
+      touch ${meta.id}.shovill.log
       shovill --version | sed -e 's/^.*shovill //' > shovill.version.txt
     """
 }
