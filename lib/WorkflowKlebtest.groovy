@@ -10,10 +10,13 @@ class WorkflowKlebtest {
     public static void initialise(params, log) {
         genomeExistsError(params, log)
 
-        if (!params.fasta) {
-            log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
-            System.exit(1)
-        }
+        // Need to filter out the fasta input, We Dont use it ! 
+
+
+        // if (!params.fasta) {
+        //     log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
+        //     System.exit(1)
+        // }
     }
 
     //

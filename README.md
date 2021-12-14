@@ -1,35 +1,28 @@
 # ![nf-core/klebtest](docs/images/nf-core-klebtest_logo.png)
 
-[![GitHub Actions CI Status](https://github.com/nf-core/klebtest/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/klebtest/actions?query=workflow%3A%22nf-core+CI%22)
-[![GitHub Actions Linting Status](https://github.com/nf-core/klebtest/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/klebtest/actions?query=workflow%3A%22nf-core+linting%22)
-[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/klebtest/results)
-[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
-
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.04.0-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23klebtest-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/klebtest)
-[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)
-[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
+
 
 ## Introduction
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
-**nf-core/klebtest** is a bioinformatics best-practice analysis pipeline for kleb test.
+**nf-core/klebtest** is a terrible pipeline I wrote to play with DSL2 and analyse some Klebsiella genomes.
+
+THIS IS A TOY EXAMPLE, AND WILL NOT BE MAINTAINED. IT SHOULD NOT BE USED BY ANYONE.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
-<!-- TODO nf-core: Add full-sized test dataset and amend the paragraph below if applicable -->
-On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/klebtest/results).
 
 ## Pipeline summary
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
-
 1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
 2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+3. Runs Shovill for de novo genome assembly ([`shovill`])(https://github.com/tseemann/shovill))
+4. Runs Kleborate for genotyping ([`kleborate`](https://github.com/katholt/Kleborate))
 
 ## Quick Start
 
@@ -52,7 +45,8 @@ On release, automated continuous integration tests run the pipeline on a full-si
     <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
 
     ```console
-    nextflow run nf-core/klebtest -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --genome GRCh37
+    nextflow run ~/code/nf-core-klebtest/main.nf  --input samples.csv  -profile slurm,singularity --singularity_pull_docker_container
+
     ```
 
 ## Documentation

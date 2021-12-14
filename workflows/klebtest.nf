@@ -11,7 +11,7 @@ WorkflowKlebtest.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
+def checkPathParamList = [ params.input, params.multiqc_config] // , params.fasta ] Need to filter out the fasta input 
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
@@ -60,6 +60,14 @@ multiqc_options.args += params.multiqc_title ? Utils.joinModuleArgs(["--title \"
 include { FASTQC  } from '../modules/nf-core/modules/fastqc/main'  addParams( options: modules['fastqc'] )
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main' addParams( options: multiqc_options   )
 
+//
+// MODULE: Use modified local copy
+//
+
+include { SHOVILL  } from '../modules/local/modules/shovill'  addParams( options: modules['shovill'] )
+include { KLEBORATE  } from '../modules/local/modules/kleborate'  addParams( options: modules['kleborate'] )
+include { MLST } from '../modules/local/modules/mlst' addParams( options: modules['mlst']   )
+
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -87,6 +95,24 @@ workflow KLEBTEST {
         INPUT_CHECK.out.reads
     )
     ch_software_versions = ch_software_versions.mix(FASTQC.out.version.first().ifEmpty(null))
+
+    //
+    // MODULE: Run Shovill
+    //
+    SHOVILL (
+        INPUT_CHECK.out.reads
+    )
+    ch_software_versions = ch_software_versions.mix(SHOVILL.out.version.first().ifEmpty(null))
+    
+    MLST (
+        SHOVILL.out.contigs
+    )
+    ch_software_versions = ch_software_versions.mix(MLST.out.version.ifEmpty(null))    
+
+    KLEBORATE (
+        SHOVILL.out.contigs
+    )
+    ch_software_versions = ch_software_versions.mix(KLEBORATE.out.version.ifEmpty(null))    
 
     //
     // MODULE: Pipeline reporting
